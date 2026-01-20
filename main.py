@@ -79,7 +79,11 @@ def tg_send_message(chat_id: int, text: str) -> None:
 
 
 def tg_send_banner(chat_id: int, site_url: str) -> None:
-    caption = "Сервис быстрого и безопасного обмена валют"
+    caption = (
+        "Сервис быстрого и безопасного обмена валют\n"
+        "<b>Нажми, чтобы начать</b>\n"
+        "⬇️⬇️⬇️"
+    )
 
     reply_markup = {
         "inline_keyboard": [
@@ -165,3 +169,4 @@ def telegram_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     app.run(host="0.0.0.0", port=port)
+
