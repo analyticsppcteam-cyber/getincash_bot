@@ -102,6 +102,7 @@ def tg_send_banner(chat_id: int, site_url: str) -> None:
             data={
                 "chat_id": str(chat_id),
                 "caption": caption,
+                "parse_mode": "HTML",
                 "reply_markup": json.dumps(reply_markup, ensure_ascii=False),
             },
             files={"photo": photo},
@@ -169,4 +170,5 @@ def telegram_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     app.run(host="0.0.0.0", port=port)
+
 
