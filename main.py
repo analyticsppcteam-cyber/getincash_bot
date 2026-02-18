@@ -8,24 +8,14 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-# =========================
-# Настройки (меняй при необходимости)
-# =========================
-
 BASE_URL = "https://getincash.com/currency-exchange"
 UTM_SOURCE = "telegram"
 UTM_MEDIUM = "paid_social"
 
-# Имя файла баннера в репозитории
 BANNER_FILE_NAME = "tg_banner_bot.jpg"
-
-# =========================
-# Telegram API
-# =========================
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 if not BOT_TOKEN:
-    # Чтобы деплой не "молчал": лучше явная ошибка в логах, чем странное поведение
     raise RuntimeError("ENV BOT_TOKEN is not set. Add it in Render -> Environment -> Environment Variables.")
 
 API_BASE = f"https://api.telegram.org/bot{BOT_TOKEN}"
@@ -34,17 +24,6 @@ BANNER_PATH = (Path(__file__).resolve().parent / BANNER_FILE_NAME)
 
 
 def build_site_url(payload: str) -> str:
-    """
-    Поддерживает несколько форматов payload:
-    1) chan_102__ad_17__ru   (как у тебя было)
-    2) chan_102_ad_17_ru     (если без двойных __)
-    3) пустой payload
-
-    Маппинг:
-    utm_campaign = parts[0]
-    utm_content  = parts[1]
-    utm_term     = parts[2]
-    """
     payload = (payload or "").strip()
 
     if not payload:
@@ -91,7 +70,6 @@ def tg_send_banner(chat_id: int, site_url: str) -> None:
         ]
     }
 
-    # Если баннера нет — отправим хотя бы текст с кнопкой
     if not BANNER_PATH.exists():
         tg_send_message(chat_id, f"{caption}\n{site_url}")
         return
@@ -112,7 +90,6 @@ def tg_send_banner(chat_id: int, site_url: str) -> None:
 
 
 def extract_message(update: dict) -> dict | None:
-    # Telegram может прислать message / edited_message / channel_post etc.
     return (
         update.get("message")
         or update.get("edited_message")
@@ -121,10 +98,6 @@ def extract_message(update: dict) -> dict | None:
     )
 
 
-# =========================
-# Routes
-# =========================
-
 @app.route("/", methods=["GET"])
 def healthcheck():
     return "ok", 200
@@ -132,7 +105,6 @@ def healthcheck():
 
 @app.route("/telegram", methods=["GET"])
 def telegram_get():
-    # Чтобы в браузере не видеть 405 — просто показываем ok
     return "ok", 200
 
 
@@ -163,13 +135,10 @@ def telegram_webhook():
     return "ok", 200
 
 
-# =========================
-# Entrypoint
-# =========================
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "10000"))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
